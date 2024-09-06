@@ -52,7 +52,7 @@ class WarmupLR(object):
 class TrainManager(object):
     @staticmethod
     def get_trainer(flags_obj, workspace):
-        dataset = GraphDataset(flags_obj)  # 加载数据
+        dataset = GraphDataset(flags_obj)
         if flags_obj.model_name == "CIEGCL":
             model_operator = CIEGCL_ModelOperator(flags_obj, workspace, dataset)
             return Trainer(flags_obj, model_operator)
@@ -82,13 +82,11 @@ class Trainer(object):
             drop_last=False
         )
         # self.sampler = UniformSample(self.model_operator.dataset)
-        # weight_decay=1e-8，但是设置weight_decay不如自己计算的regular_loss
         self.optimizer = optim.Adam(self.model_operator.model.parameters(), lr=self.flags_obj.lr,
                                     weight_decay=self.flags_obj.weight_decay)
         # self.optimizer = optim.Adam(self.model_operator.model.parameters(), lr=self.flags_obj.lr)
 
     def train(self):
-        # 保存最初的随机嵌入
         self.model_operator.save_model(0)
         results = self.tester.test()
         logging.info("Test: {}".format(results))
