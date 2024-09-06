@@ -49,16 +49,7 @@ flags.DEFINE_bool("dropout", False, "Whether drop graph or not.")
 flags.DEFINE_bool("faiss_use_gpu", False, "Use GPU or not for faiss search.")
 
 
-# lightGCN遵循NGCF的惯例，将数据集8:2划分为训练集和测试集，通过随机选择每个用户80%的历史交互
-# logging.set_verbosity(logging.DEBUG)  # 将log打印的最低级别设置为debug
-# logging.use_absl_handler()
-# logging.get_absl_handler().setFormatter(None)
-
-
 def main(argv):
-    # workspace在调试的时候可以自己手动设置
-    # workspace = 'D:/project/GCNRS/output/VAEDICE_2023-04-20-16-51'
-
     config = logging_config(flags_obj)
     config.set_train_logging()
     trainer = TrainManager.get_trainer(flags_obj, config.workspace)
