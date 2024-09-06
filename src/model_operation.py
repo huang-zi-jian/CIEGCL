@@ -5,7 +5,6 @@ file info:
 """
 import torch
 from CIEGCL import CIEGCL
-# from AED_SP_v8 import AED
 import os
 import torch.nn.functional as func
 from dataloader import GraphDataset
@@ -39,7 +38,6 @@ class ModelOperator(object):
         ckpt_path = os.path.join(self.workspace, 'ckpt')
         model_path = os.path.join(ckpt_path, 'epoch_' + str(epoch) + '.pth')
 
-        # gpu加载还是cpu加载模型
         self.model.load_state_dict(torch.load(model_path, map_location=self.device))
 
     def getUsersRating(self, users):
@@ -80,15 +78,3 @@ class CIEGCL_ModelOperator(ModelOperator):
         rating = func.sigmoid(torch.matmul(users_embed, items_embed.t()))
 
         return rating
-
-    # def get_loss(self, sample):
-    #     user, user_adjacent_item, items_pool, items_weight = sample
-    #
-    #     users = user.to(self.device)
-    #     adjacent_items = user_adjacent_item.to(self.device)
-    #     items_pool = items_pool.to(self.device)
-    #     items_weight = items_weight.to(self.device)
-    #
-    #     loss = self.model(users, adjacent_items, items_pool, items_weight)
-    #
-    #     return loss
