@@ -42,7 +42,7 @@ class GraphDataset(Dataset):
         self.V_mul_S = None
 
         self.train_csr_record = sp.load_npz(os.path.join(self.dataset_path, 'train_csr_record.npz'))
-        self.train_csr_record = self.train_csr_record.astype(np.bool).astype(np.int)  # 有数据集存在重复项
+        self.train_csr_record = self.train_csr_record.astype(np.bool).astype(np.int)
         self.test_csr_record = sp.load_npz(os.path.join(self.dataset_path, 'test_csr_record.npz'))
         self.test_csr_record = self.test_csr_record.astype(np.bool).astype(np.int)
 
@@ -101,7 +101,6 @@ class GraphDataset(Dataset):
 
             user_2_hops = user_1_hops.dot(item_1_hops)
 
-            # user二跳邻居不包含user自己，删除
             diags = sp.diags(np.ones(self.num_users), format='csr', dtype=np.int32)
             user_2_hops = user_2_hops - user_2_hops.multiply(diags)
 
@@ -216,7 +215,6 @@ class GraphDataset(Dataset):
         return torch.sparse.FloatTensor(index, data, torch.Size(coo.shape))
 
 
-# UniformTrainDataset抽取的用户服从均匀分布
 class UniformTrainDataset(Dataset):
     def __init__(self, dataset: GraphDataset):
         super(UniformTrainDataset, self).__init__()
@@ -226,11 +224,9 @@ class UniformTrainDataset(Dataset):
         self.num_items = dataset.num_items
 
     def __len__(self):
-        # nnz返回稀疏矩阵非零数量
         return self.lil_train_record.nnz
 
     def __getitem__(self, index):
-        # 该位置的while循环是为了确保从训练集中采样的user存在交互样本
         while True:
             user = np.random.randint(0, self.num_users)
             user_positive_items = self.lil_train_record.rows[user]
@@ -248,13 +244,12 @@ class UniformTrainDataset(Dataset):
         return user, positive_item, negative_item
 
 
-# 随机抽取训练集user-item项
 class GCNRSTrainDataset(Dataset):
     def __init__(self, dataset: GraphDataset):
         super(GCNRSTrainDataset, self).__init__()
         self.lil_train_record = dataset.lil_train_record
         self.dok_train_record = dataset.lil_train_record.todok(copy=True)
-        self.train_record = list(self.dok_train_record.keys())  # 得到正样本的(user,item)二元组数据
+        self.train_record = list(self.dok_train_record.keys())
 
         self.num_items = dataset.num_items
 
