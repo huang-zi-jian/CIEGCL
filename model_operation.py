@@ -39,7 +39,6 @@ class ModelOperator(object):
         ckpt_path = os.path.join(self.workspace, 'ckpt')
         model_path = os.path.join(ckpt_path, 'epoch_' + str(epoch) + '.pth')
 
-        # gpu加载还是cpu加载模型
         self.model.load_state_dict(torch.load(model_path, map_location=self.device))
 
     def getUsersRating(self, users):
