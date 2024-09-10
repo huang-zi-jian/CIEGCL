@@ -16,9 +16,8 @@ class logging_config(object):
         self.log_path = self.get_log_path()
 
         self.set_flags_logging()
-        self.log_flags()  # 将flags_obj中的配置输入flags.log文件保存
+        self.log_flags()
 
-    # 私有方法，不允许外部调用（初始化workspace）
     def __get_workspace(self):
         data_time = datetime.datetime.now().strftime('%Y-%m-%d-%H-%M')
         experiment_name = self.flags_obj.dataset_name + '_' + self.flags_obj.model_name + '_' + data_time
@@ -38,7 +37,7 @@ class logging_config(object):
     def set_flags_logging(self):
         """
 
-        :return: 设置为flags配置模式，日志写入flags.log文件
+        :return:
         """
         logging.flush()
         logging.get_absl_handler().use_absl_log_file('flags.log', self.log_path)
@@ -46,7 +45,7 @@ class logging_config(object):
     def set_train_logging(self):
         """
 
-        :return: logging设置为训练模式，日志写入train.log文件
+        :return:
         """
         logging.flush()
         logging.get_absl_handler().use_absl_log_file('train.log', self.log_path)
