@@ -119,10 +119,6 @@ class CIEGCL(nn.Module):
         self.cl_weight = self.flags_obj.cl_weight
         self.csr_to_tensor = dataset.convert_sp_matrix_to_tensor
         # self.num_community = self.flags_obj.num_community
-        # todo：修改聚合权重，
-        #  1、流行度平方根的倒数
-        #  2、将上述邻居节点的倒数进行归一化
-        #  3、减小正则化系数
         self.Graph = dataset.symmetric_sub_graph
 
         # self.user_embedding = Parameter(torch.FloatTensor(self.num_users, self.embedding_dim))
@@ -203,7 +199,6 @@ class CIEGCL(nn.Module):
         sample_csr = sp.csr_matrix((np.ones(users.shape[0]), (users.cpu(), adjacent_items.cpu())),
                                    shape=(self.num_users, self.num_items),
                                    dtype=np.int)
-        # 采样过程user-positive item对会重复，导致正样本稀疏矩阵非零元素数值出现大于1的情况
         sample_csr = sample_csr.astype(np.bool).astype(np.int)
 
         sample_tensor = self.csr_to_tensor(sample_csr).coalesce().to(self.flags_obj.device)
