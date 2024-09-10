@@ -47,10 +47,8 @@ class Splitter(object):
     @staticmethod
     def rank(record):
         if 'ts' in record.columns:
-            # 这里是按照时间顺序进行数据划分
             record['rank'] = record['ts'].groupby(record['uid']).rank(method='first', pct=True, ascending=False)
         else:
-            # 没有时间就随机排名
             record['rank'] = np.random.uniform(low=0, high=1, size=len(record))
 
         return record
@@ -108,7 +106,6 @@ class SkewSplitter(Splitter):
         #                                                      weights='count').reset_index(drop=True)
         self.valid_test_record = record.sample(frac=splits[1], weights='count',
                                                random_state=np.random.RandomState()).reset_index(drop=True)
-        # drop_duplicates删除重复项，即删除record中的valid_test_record部分
         self.train_record = pd.concat([record, self.valid_test_record]).drop_duplicates(keep=False).reset_index(
             drop=True)
         self.drop_and_reset_index_double()
@@ -203,7 +200,7 @@ class TemporalSplitter(Splitter):
     def split_triple(self, splits):
         """
 
-        :param splits: splits=[a, b, c]表示early_record占比为a;middle_record占比为b;late_record占比为c
+        :param splits: splits=[a, b, c]
         :return:
         """
         record = self.rank(self.record)
@@ -285,16 +282,15 @@ class CsvGenerator(object):
     def unbiased_split(self, skew_splits, temporal_splits, sample_type):
         """
 
-        :param skew_splits: train:rest比例
-        :param temporal_splits: 对rest划分，skew_train:skew_test比例
-        :return: skew划分数据集
+        :param skew_splits: train:rest
+        :param temporal_splits: skew_train:skew_test
+        :return:
         """
         skew_splitter = SkewSplitter(self.record)
 
         train_record, rest_record = skew_splitter.split(splits=skew_splits, sample_type=sample_type)
         # train_num_users = train_record.groupby('uid').count().size
 
-        # 划分数据集的时候确保训练集存在每个用户的交互
         # if train_num_users == self.num_users:
         train_record = train_record.sort_values(by=['uid', 'iid']).reset_index(drop=True)
         rest_record = rest_record.sort_values(by=['uid', 'iid']).reset_index(drop=True)
@@ -331,8 +327,8 @@ class CsvGenerator(object):
     def split(self, temporal_splits):
         """
 
-        :param temporal_splits: train:test比例
-        :return: 随机划分数据集
+        :param temporal_splits: train:test
+        :return:
         """
         temporal_splitter = TemporalSplitter(self.record)
         train_record, test_record = temporal_splitter.split(splits=temporal_splits)
@@ -438,9 +434,6 @@ def yahoo_load(dataset_dir):
 
 
 class COAT():
-    """
-    处理coat数据集，无偏数据集
-    """
 
     def __init__(self):
         super(COAT, self).__init__()
@@ -514,9 +507,6 @@ class COAT():
 
 
 class YAHOO():
-    """
-    处理yahoo数据集，无偏数据集
-    """
 
     def __init__(self):
         super(YAHOO, self).__init__()
@@ -595,8 +585,8 @@ class preprocess(object):
     def reset_iid(self, filtrate):
         """
 
-        :param filtrate: 是否过滤流行度低的item，True or False
-        :return: 过滤掉流行度低于3的item
+        :param filtrate: 
+        :return:
         """
         if filtrate:
             popularity = self.record.groupby('iid').count().reset_index().rename(columns={'uid': 'count'})
@@ -611,11 +601,6 @@ class preprocess(object):
             columns={'reset_iid': 'iid'})
 
     def reset_uid(self, filtrate):
-        """
-
-        :param filtrate: 是否过滤流行度低的user，True or False
-        :return: 过滤掉活跃度低于3的user
-        """
         if filtrate:
             activity = self.record.groupby('uid').count().reset_index().rename(columns={'iid': 'count'})
             record = self.record.merge(activity, on='uid')
