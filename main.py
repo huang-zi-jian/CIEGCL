@@ -35,8 +35,7 @@ flags.DEFINE_string("output", 'C:/Users/admin/Desktop/CIEGCL/output', "Folder fo
 flags.DEFINE_string("dataset", "C:/Users/admin/Desktop/CIEGCL/dataset/", "Folder for dataset.")
 flags.DEFINE_enum("device", "cuda:0", ['cpu', 'cuda:0', 'cuda:1', 'cuda:2', 'cuda:3'], 'Device setting for training.')
 flags.DEFINE_enum("dataset_name", "coat",
-                  ["Ciao", "coat", "KuaiRec 2.0", "lastfm", "ml1m", "ml10m", "yahoo", "zhihu", "yahoo_3", "coat_3"],
-                  "Name of dataset.")
+                  ["Ciao", "coat", "lastfm", "ml1m", "ml10m", "yahoo"], "Name of dataset.")
 flags.DEFINE_enum("model_name", "CIEGCL", ['CIEGCL'],
                   'Model for training.')
 flags.DEFINE_enum("discrepancy_loss", "dCor", ['L1', 'L2', 'dCor'], 'Discrepancy loss function.')
@@ -49,15 +48,12 @@ flags.DEFINE_bool("dropout", False, "Whether drop graph or not.")
 flags.DEFINE_bool("faiss_use_gpu", False, "Use GPU or not for faiss search.")
 
 
-# lightGCN遵循NGCF的惯例，将数据集8:2划分为训练集和测试集，通过随机选择每个用户80%的历史交互
-# logging.set_verbosity(logging.DEBUG)  # 将log打印的最低级别设置为debug
+# logging.set_verbosity(logging.DEBUG)
 # logging.use_absl_handler()
 # logging.get_absl_handler().setFormatter(None)
 
 
 def main(argv):
-    # workspace在调试的时候可以自己手动设置
-    # workspace = 'D:/project/GCNRS/output/VAEDICE_2023-04-20-16-51'
 
     config = logging_config(flags_obj)
     config.set_train_logging()
