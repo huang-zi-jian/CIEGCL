@@ -33,7 +33,7 @@ tqdm==4.64.1
 
 * Movielens-1M
 ```
---cl_weight 0.01 --temp 0.1
+--cl_weight 0.01 --temp 0.2
 ```
 
 * Coat
