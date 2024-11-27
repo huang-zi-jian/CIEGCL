@@ -28,12 +28,12 @@ tqdm==4.64.1
 
 * Ciao
 ```
---cl_weight 0.01
+--cl_weight 0.001
 ```
 
 * Movielens-1M
 ```
---cl_weight 0.01 --temp 0.2
+--cl_weight 0.001 --temp 0.2
 ```
 
 * Coat
